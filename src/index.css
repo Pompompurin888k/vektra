@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Canvas & surfaces */
+  --color-canvas: #f9fafb;
+  --color-surface: #ffffff;
+  --color-ink: #18181b;
+  --color-steel: #52525b;
+  --color-muted: #a1a1aa;
+  --color-hairline: #e4e4e7;
+
+  /* Vektra amber — warm, energetic, Kenya */
+  --color-vektra-50: #fff7ed;
+  --color-vektra-100: #ffedd5;
+  --color-vektra-200: #fed7aa;
+  --color-vektra-300: #fdba74;
+  --color-vektra-400: #fb923c;
+  --color-vektra-500: #f97316;
+  --color-vektra-600: #ea580c;
+  --color-vektra-700: #c2410c;
+  --color-vektra-800: #9a3412;
+  --color-vektra-900: #7c2d12;
+
+  /* M-Pesa brand green for the payment badge */
+  --color-mpesa: #43b02a;
+
+  --shadow-diffuse: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+  --shadow-float: 0 30px 60px -20px rgba(0, 0, 0, 0.12);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    /* Soft mesh — layered radial glows over a faint dot grid */
+    background-image:
+      radial-gradient(at 12% 8%, rgba(249, 115, 22, 0.07) 0, transparent 42%),
+      radial-gradient(at 88% 4%, rgba(234, 88, 12, 0.06) 0, transparent 38%),
+      radial-gradient(at 55% 88%, rgba(249, 115, 22, 0.05) 0, transparent 45%),
+      radial-gradient(rgba(24, 24, 27, 0.045) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      26px 26px;
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background-color: var(--color-vektra-100);
+    color: var(--color-vektra-900);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Reveal-on-scroll helper (driven by data-reveal attr) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .mask-fade-y {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes welcome-avatar {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateY(18px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes welcome-word {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes welcome-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-up {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes row-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

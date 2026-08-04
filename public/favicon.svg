@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 40 40" fill="none">
+  <defs>
+    <linearGradient id="vkt-fav-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fb923c"/>
+      <stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="12" fill="#18181b"/>
+  <path d="M13 27 20 11 27 27" stroke="url(#vkt-fav-grad)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24 20.5 27 27H30" stroke="rgba(255,255,255,0.5)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
