@@ -10,6 +10,7 @@ import {
   Envelope,
   Gauge,
   PhoneCall,
+  SignOut,
   Sparkle,
   TestTube,
   UsersThree,
@@ -17,6 +18,7 @@ import {
 } from '@phosphor-icons/react'
 import { LogoMark } from '../components/Logo'
 import Toast from '../components/Toast'
+import { logoutAdmin } from '../lib/adminAuth'
 import {
   getPayoutRequest,
   listPayoutRequests,
@@ -131,6 +133,17 @@ export default function AdminRequestDetail() {
             {listPayoutRequests().filter((r) => r.status === 'submitted').length} awaiting
           </p>
         </div>
+
+        <button
+          onClick={() => {
+            logoutAdmin()
+            navigate('/admin', { replace: true })
+          }}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-hairline bg-surface px-3 py-2.5 text-sm font-medium text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+        >
+          <SignOut size={16} weight="bold" />
+          Sign out
+        </button>
       </aside>
 
       {/* Main */}
@@ -149,6 +162,17 @@ export default function AdminRequestDetail() {
               <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
               {meta.label}
             </span>
+            <button
+              onClick={() => {
+                logoutAdmin()
+                navigate('/admin', { replace: true })
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3.5 py-1.5 text-xs font-semibold text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+              title="Sign out of admin"
+            >
+              <SignOut size={14} weight="bold" />
+              Sign out
+            </button>
           </div>
         </header>
 

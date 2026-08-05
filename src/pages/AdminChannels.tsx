@@ -1,9 +1,11 @@
-import { Link, NavLink } from 'react-router-dom'
-import { ArrowUpRight, Bell, Gauge, UsersThree, Wallet } from '@phosphor-icons/react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { ArrowUpRight, Bell, Gauge, SignOut, UsersThree, Wallet } from '@phosphor-icons/react'
 import { LogoMark } from '../components/Logo'
+import { logoutAdmin } from '../lib/adminAuth'
 import { kenyanBanks } from '../lib/banks'
 
 export default function AdminChannels() {
+  const navigate = useNavigate()
   const channels = kenyanBanks.filter((b) => b.channelId)
 
   return (
@@ -46,6 +48,17 @@ export default function AdminChannels() {
             {channels.length} bank channels mapped
           </p>
         </div>
+
+        <button
+          onClick={() => {
+            logoutAdmin()
+            navigate('/admin', { replace: true })
+          }}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-hairline bg-surface px-3 py-2.5 text-sm font-medium text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+        >
+          <SignOut size={16} weight="bold" />
+          Sign out
+        </button>
       </aside>
 
       <div className="lg:pl-64">
@@ -67,6 +80,17 @@ export default function AdminChannels() {
               Open Lipa Haraka dashboard
               <ArrowUpRight size={14} weight="bold" />
             </a>
+            <button
+              onClick={() => {
+                logoutAdmin()
+                navigate('/admin', { replace: true })
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3.5 py-2 text-xs font-semibold text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+              title="Sign out of admin"
+            >
+              <SignOut size={14} weight="bold" />
+              Sign out
+            </button>
           </div>
         </header>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +12,8 @@ import {
   Check,
 } from '@phosphor-icons/react'
 import { LogoMark } from '../components/Logo'
+import Toast from '../components/Toast'
+import { loginWithGoogle } from '../lib/auth'
 import { previewUsers, setPreviewUser, type MockUser } from '../lib/users'
 import { ksh, kshCompact } from '../lib/format'
 
@@ -23,6 +25,22 @@ import { ksh, kshCompact } from '../lib/format'
  */
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [toast, setToast] = useState<string | null>(null)
+
+  // Surface Google OAuth errors surfaced via ?error=
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (!error) return
+    const msg =
+      error === 'access_denied'
+        ? 'Sign-in was cancelled.'
+        : error === 'invalid_state'
+          ? 'Session expired — try again.'
+          : 'Google sign-in failed.'
+    setToast(msg)
+    setSearchParams({}, { replace: true })
+  }, [searchParams, setSearchParams])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -179,6 +197,17 @@ export default function Login() {
             </button>
           </form>
 
+          {/* Continue with Google */}
+          <button
+            type="button"
+            onClick={loginWithGoogle}
+            disabled={previewState !== 'idle'}
+            className="mt-4 flex w-full items-center justify-center gap-3 rounded-full border border-hairline bg-white py-3.5 text-sm font-semibold text-ink shadow-sm transition-all hover:bg-surface active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+          >
+            <GoogleG className="h-5 w-5" />
+            Continue with Google
+          </button>
+
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-hairline" />
@@ -263,13 +292,38 @@ export default function Login() {
 
       {/* Welcome transition overlay */}
       {entering && <WelcomeOverlay user={selected} onDone={() => navigate('/dashboard')} />}
+
+      <Toast message={toast} onDismiss={() => setToast(null)} />
     </div>
   )
 }
 
-/* ============ RIGHT PANEL: user details ============ */
-function UserPanel({ user }: { user: MockUser }) {
+/* ============ GOOGLE G LOGO ============ */
+function GoogleG({ className }: { className?: string }) {
   return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"
+      />
+    </svg>
+  )
+}
+
+/* ============ RIGHT PANEL: user details ============ */
+function UserPanel({ user }: { user: MockUser }) {  return (
     <div className="relative overflow-hidden rounded-[2.5rem] bg-ink p-10 text-white shadow-float">
       <div
         aria-hidden

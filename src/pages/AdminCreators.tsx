@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { Bell, Gauge, UsersThree, Wallet } from '@phosphor-icons/react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Bell, Gauge, SignOut, UsersThree, Wallet } from '@phosphor-icons/react'
 import { LogoMark } from '../components/Logo'
+import { logoutAdmin } from '../lib/adminAuth'
 import { listPayoutRequests, type PayoutRequest } from '../lib/payoutRequests'
 import { previewUsers } from '../lib/users'
 
@@ -13,6 +14,7 @@ const statusMeta: Record<PayoutRequest['status'], { label: string; color: string
 }
 
 export default function AdminCreators() {
+  const navigate = useNavigate()
   const [requests, setRequests] = useState<PayoutRequest[]>([])
 
   useEffect(() => {
@@ -61,6 +63,17 @@ export default function AdminCreators() {
             {count('submitted')} awaiting · {count('connected')} connected · {count('ready')} live
           </p>
         </div>
+
+        <button
+          onClick={() => {
+            logoutAdmin()
+            navigate('/admin', { replace: true })
+          }}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-hairline bg-surface px-3 py-2.5 text-sm font-medium text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+        >
+          <SignOut size={16} weight="bold" />
+          Sign out
+        </button>
       </aside>
 
       <div className="lg:pl-64">

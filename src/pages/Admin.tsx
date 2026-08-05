@@ -5,6 +5,8 @@ import {
   CheckCircle,
   Gauge,
   PhoneCall,
+  ShieldCheck,
+  SignOut,
   Sparkle,
   TestTube,
   Trash,
@@ -13,12 +15,136 @@ import {
 } from '@phosphor-icons/react'
 import { LogoMark } from '../components/Logo'
 import Toast from '../components/Toast'
+import { isAdminAuthed, logoutAdmin, verifyAdminCode } from '../lib/adminAuth'
 import {
   listPayoutRequests,
   deletePayoutRequest,
   type PayoutRequest,
 } from '../lib/payoutRequests'
 
+/**
+ * /admin — code entry gate first.
+ * Enter the 6-digit code (later wired to an authenticator app) or use the
+ * "Admin preview" button to skip straight in. Signing out lands back here.
+ */
+export default function AdminGate() {
+  const [authed, setAuthed] = useState(isAdminAuthed)
+
+  if (!authed) {
+    return <AdminLogin onAuthed={() => setAuthed(true)} />
+  }
+  return <AdminPayouts onLogout={() => setAuthed(false)} />
+}
+
+/* ============ CODE ENTRY / PREVIEW ============ */
+function AdminLogin({ onAuthed }: { onAuthed: () => void }) {
+  const [code, setCode] = useState('')
+  const [error, setError] = useState('')
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const err = verifyAdminCode(code)
+    if (err) {
+      setError(err)
+      return
+    }
+    onAuthed()
+  }
+
+  return (
+    <div className="flex min-h-[100dvh] flex-col">
+      {/* Top bar */}
+      <header className="sticky top-0 z-30 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <LogoMark className="h-7 w-7" />
+            <span className="text-lg font-bold tracking-tight text-ink">Vektra</span>
+          </Link>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-steel hover:text-ink"
+          >
+            Back to site
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-6 py-14">
+        <div className="w-full max-w-sm">
+          <div className="flex justify-center">
+            <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-vektra-400 to-vektra-600 text-white shadow-float">
+              <ShieldCheck size={30} weight="bold" />
+            </span>
+          </div>
+
+          <h1 className="mt-6 text-center text-2xl font-bold tracking-tight text-ink">
+            Admin access
+          </h1>
+          <p className="mt-2 text-center text-sm leading-relaxed text-steel">
+            Enter the 6-digit code from your authenticator app to manage
+            payout channels.
+          </p>
+
+          <form onSubmit={submit} className="mt-8">
+            <div className="flex items-center gap-2 rounded-2xl border border-hairline bg-surface px-4 py-3.5 focus-within:border-vektra-400">
+              <input
+                value={code}
+                onChange={(e) => {
+                  setCode(e.target.value)
+                  setError('')
+                }}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                placeholder="••••••"
+                className="w-full bg-transparent text-center font-mono text-2xl font-bold tracking-[0.5em] text-ink outline-none placeholder:text-muted"
+                aria-label="6-digit authenticator code"
+              />
+            </div>
+
+            {error && <p className="mt-2.5 text-center text-sm font-medium text-red-600">{error}</p>}
+
+            <button
+              type="submit"
+              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-ink py-3.5 text-sm font-semibold text-white transition-all hover:bg-black active:scale-[0.98]"
+            >
+              <ShieldCheck size={17} weight="bold" />
+              Verify &amp; enter
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-hairline" />
+            <span className="text-xs font-medium uppercase tracking-widest text-muted">or</span>
+            <div className="h-px flex-1 bg-hairline" />
+          </div>
+
+          {/* Preview — for internal testing, no backend needed */}
+          <div className="rounded-2xl border border-vektra-100 bg-vektra-50/60 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-vektra-800">
+              <Sparkle size={14} weight="bold" className="text-vektra-600" />
+              Preview mode — internal testing
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-vektra-700">
+              The authenticator isn't wired up yet. Jump straight into the
+              admin dashboard with sample data.
+            </p>
+            <button
+              onClick={onAuthed}
+              className="group mt-3 flex w-full items-center justify-center gap-2 rounded-full border-2 border-vektra-500 bg-surface py-2.5 text-xs font-semibold text-vektra-800 transition-all hover:bg-vektra-100 active:scale-[0.98]"
+            >
+              <Sparkle size={14} weight="bold" className="text-vektra-600" />
+              Enter admin preview
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+/* ============ PAYOUTS DASHBOARD ============ */
 const statusMeta: Record<
   PayoutRequest['status'],
   { label: string; color: string; dot: string }
@@ -29,7 +155,7 @@ const statusMeta: Record<
   ready: { label: 'Ready — creator notified', color: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
 }
 
-export default function AdminPayouts() {
+function AdminPayouts({ onLogout }: { onLogout: () => void }) {
   const [requests, setRequests] = useState<PayoutRequest[]>([])
   const [toast, setToast] = useState<string | null>(null)
 
@@ -114,6 +240,17 @@ export default function AdminPayouts() {
             {count('submitted')} awaiting · {count('connected')} connected · {count('tested')} tested
           </p>
         </div>
+
+        <button
+          onClick={() => {
+            logoutAdmin()
+            onLogout()
+          }}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-hairline bg-surface px-3 py-2.5 text-sm font-medium text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+        >
+          <SignOut size={16} weight="bold" />
+          Sign out
+        </button>
       </aside>
 
       {/* Main */}
@@ -138,6 +275,17 @@ export default function AdminPayouts() {
                   {count(s)}
                 </div>
               ))}
+              <button
+                onClick={() => {
+                  logoutAdmin()
+                  onLogout()
+                }}
+                className="ml-2 inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3.5 py-1.5 text-xs font-semibold text-steel transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                title="Sign out of admin"
+              >
+                <SignOut size={14} weight="bold" />
+                Sign out
+              </button>
             </div>
           </div>
         </header>
