@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { exchangeCodeForUser } from '../_lib/google.ts'
+import { exchangeCodeForUser } from '../_lib/google'
 import {
   SESSION_COOKIE,
   STATE_COOKIE,
@@ -7,7 +7,7 @@ import {
   readCookie,
   serializeCookie,
   signSession,
-} from '../_lib/session.ts'
+} from '../_lib/session'
 
 /** GET /api/auth/callback — Google's redirect target. Exchange code, set session, go to /dashboard. */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
