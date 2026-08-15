@@ -122,7 +122,7 @@ export default function AdminChannels() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-ink">{b.name}</p>
-                    <p className="text-[11px] text-muted">Bank code {b.code}</p>
+                    <p className="text-[11px] text-muted">{b.code ? `Bank code ${b.code}` : 'Bank route'}</p>
                   </div>
                   <span className="rounded-full bg-canvas px-3 py-1 font-mono text-xs font-semibold text-ink">
                     channel {b.channelId}

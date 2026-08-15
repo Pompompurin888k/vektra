@@ -686,7 +686,7 @@ function BankSheet({
 }: {
   query: string
   setQuery: (v: string) => void
-  results: { name: string; code: string }[]
+  results: { name: string; code?: string }[]
   popular: string[]
   value: string
   onPick: (name: string) => void
