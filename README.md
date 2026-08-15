@@ -1,6 +1,24 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+# Vektra — NewTaste
+
+Instant M-Pesa tips for creators. Bank payouts, tipping, admin console.
+
+## Banks reference
+
+The Kenyan bank list lives in `src/lib/banks.ts` and is used by the onboarding
+bank picker and the admin channels console. Field semantics (`name`, `code`,
+`channelId`), the editing rules, and the shared canonical contract with the
+ChaiPoint API (`/api/banks`) are documented in the repo-root
+**[`BANK_FIELDS.md`](../BANK_FIELDS.md)**.
+
+Key rules:
+- `code` is optional and **verified-only** — never guess a bank system code.
+- `channelId` must stay unique here **and consistent with ChaiPoint** — `bun validate.ts`
+  in the repo root cross-checks both lists (check 9).
+- `assertBankIntegrity()` fails fast in dev on duplicate name/code/channel.
+
+## React + TypeScript + Vite
 
 Currently, two official plugins are available:
 
